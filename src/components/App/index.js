@@ -3,8 +3,10 @@ import React, {
     useEffect
   } from "react";
   
-  import "./App.css";
+  import "./styles.css";
   
+  const API_URL = "http://localhost:3000/todos"
+
   function App() {
     const emptyTodo = {
       title: "",
@@ -13,9 +15,10 @@ import React, {
   
     const [todos, setTodos] = useState([]);
     const [newTodo, setNewTodo] = useState(emptyTodo);
+    const [editing, setEditing] = useState(false);
   
     useEffect(() => {
-      fetch("http://localhost:3000/todos")
+      fetch(API_URL)
         .then(response =>  response.json())
         .then(todos => setTodos(todos));
   
@@ -28,9 +31,9 @@ import React, {
     };
   
     const addEntry = (todo) => {
-      fetch("http://localhost:3000/todos", {
+      fetch(API_URL, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, cors, *same-origin
+        mode: "cors", // no-cors, cors, *same-originA
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
         credentials: "same-origin", // include, *same-origin, omit
         headers: {
@@ -44,6 +47,19 @@ import React, {
   
       setNewTodo(emptyTodo);
     };
+
+    const editEntry = (todo) =>{
+      fetch(API_URL + "/" + todo.id, {
+        method: 'PUT',
+        body: JSON.stringify(todo)
+      }).then((response) => {
+        response.json().then((response) => {
+          console.log(response);
+        })
+      }).catch(err => {
+        console.error(err)
+      })
+    }
   
     const deleteEntry = (todoId) => {
       fetch("http://localhost:3000/todos/" + todoId, { method: "DELETE" })
@@ -72,6 +88,9 @@ import React, {
           {todos && todos.map((todo) => (
             <li key={todo.id}>
               {todo.title} / {todo.description}
+              <button onClick={() => console.log(todo)}>
+                edit
+              </button>
               <button onClick={() => deleteTodo(todo.id)}>
                 del
               </button>
@@ -93,4 +112,4 @@ import React, {
     );
   }
   
-  export default App;
+  export default App; 
